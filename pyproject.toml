@@ -1,0 +1,110 @@
+[project]
+name = "catscan"
+description = "Linter for TwinCAT"
+version = "0.0a1"
+requires-python = ">=3.12"
+keywords = []
+authors = [
+  { name = "Dennis Hilhorst", email = "dhilhorst@highvolteng.com" },
+]
+
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+  "License :: Other/Proprietary License"
+]
+
+dependencies = [
+  "click>=8.1",
+  "lxml",
+  "pydantic>=2.6,<=2.9.2",
+  "ruamel.yaml>=0.18.6",
+  "blark @ git+https://github.com/High-Voltage-Engineering/blark.git"
+]
+
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[project.scripts]
+catscan = "catscan.__main__:main"
+
+[project.urls]
+Issues = "https://github.com/High-Voltage-Engineering/catscan/issues"
+Source = "https://github.com/High-Voltage-Engineering/catscan"
+
+[tool.black]
+target-version = ["py312"]
+line-length = 96
+skip-string-normalization = true
+
+[tool.ruff]
+target-version = "py312"
+line-length = 96
+
+lint.select = [
+    "A",
+    "ARG",
+    "B",
+    "C",
+    "DTZ",
+    "E",
+    "EM",
+    "F",
+    "FBT",
+    "I",
+    "ICN",
+    "ISC",
+    "N",
+    "PLC",
+    "PLE",
+    "PLR",
+    "PLW",
+    "Q",
+    "RUF",
+    "S",
+    "T",
+    "TID",
+    "UP",
+    "W",
+    "YTT",
+]
+
+lint.ignore = [
+    # Allow non-abstract empty methods in abstract base classes
+    "B027",
+    # Allow boolean arguments, nitpicker
+    "FBT001",
+    "FBT002",
+    "FBT003",
+    # Ignore checks for possible passwords
+    "S105",
+    "S106",
+    "S107",
+    # Ignore complexity
+    "C901",
+    "PLR0911",
+    "PLR0912",
+    "PLR0913",
+    "PLR0915",
+    # Needed to keep CI/CD happy
+    "UP037",
+    # Asserts have a legitate usecase
+    "S101",
+    # RUF is too stupid to understand direct references
+    "RUF200",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"*/tests/**.py" = ["PLR2004", "S101", "TID252"]
+
+[lint.flake8-tidy-imports]
+ban-relative-imports = "all"

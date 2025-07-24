@@ -1,0 +1,61 @@
+[version]
+source = "vcs"
+
+[build.hooks.vcs]
+version-file = "catscan/_version.py"
+
+[version.raw-options]
+root = "../.."
+
+[metadata]
+allow-direct-references = true
+
+# Python packages to include in wheel file.
+[build.targets.wheel]
+packages = ["catscan"]
+
+[envs.default]
+dependencies = [
+  "coverage[toml]>=6.5",
+  "pytest",
+]
+
+[envs.default.scripts]
+test = "pytest {args:tests}"
+test-cov = "coverage run -m pytest {args:tests}"
+cov-report = [
+  "- coverage combine",
+  "coverage report",
+]
+cov = [
+  "test-cov",
+  "cov-report",
+]
+
+[envs.lint]
+detached = true
+dependencies = [
+  "pytest",
+  "black==24.2.0",
+  "mypy>=1.0.0",
+  "ruff==0.2.1",
+]
+
+[envs.lint.scripts]
+typing = "mypy --install-types --cache-dir=.mypy_cache --non-interactive {args:python_module tests}"
+style = [
+  "ruff {args:.}",
+  "black --check --diff {args:.}",
+]
+fmt = [
+  "black {args:.}",
+  "ruff --fix {args:.}",
+  "style",
+]
+all = [
+  "style",
+  "typing",
+]
+
+[[envs.all.matrix]]
+python = ["3.12"]

@@ -1,0 +1,8 @@
+__pycache__/
+.idea/
+.venv/
+venvs/
+**/_version.py
+
+# local clone of blark, which is useful for development
+blark/
