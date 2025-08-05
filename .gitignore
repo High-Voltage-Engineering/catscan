@@ -3,6 +3,7 @@ __pycache__/
 .venv/
 venvs/
 **/_version.py
+.catscan/
 
 # local clone of blark, which is useful for development
 blark/

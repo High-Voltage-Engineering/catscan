@@ -159,17 +159,17 @@ def parse_all_source_items(
     with fut.ProcessPoolExecutor(**kwargs) as pool:
         logger.info("Submitting files for parsing...")
         for file in files:
-            # yield from _parse_all_source_items_single(
-            #     file, use_cache=False
-            # )
-            futures[
-                pool.submit(
-                    _parse_all_source_items_single,
-                    file,
-                    cache_dir=cache_dir,
-                    use_cache=use_cache,
-                )
-            ] = file
+            yield from _parse_all_source_items_single(
+                file, use_cache=False
+            )
+            # futures[
+            #     pool.submit(
+            #         _parse_all_source_items_single,
+            #         file,
+            #         cache_dir=cache_dir,
+            #         use_cache=use_cache,
+            #     )
+            # ] = file
 
         logger.info(f"{len(futures)} files submitted for parsing")
         for future in fut.as_completed(futures):

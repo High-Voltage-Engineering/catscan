@@ -64,7 +64,7 @@ class Location:
             col, end_col = self.col, self.end_col
 
             result += f" in line {self.line}:{col}"
-        elif self.file_line is not None:
+        elif self.file_line is not None and Path(self.file).exists():
             # cannot get context if no in-source line is passed, or if no source is passed
             # at all
             error_ctx_before = linecache.getline(str(self.file), self.file_line).strip("\n")
@@ -79,7 +79,7 @@ class Location:
             # tabs may mess up cursor spacing
             err_line = source_ctx.rsplit("\n", maxsplit=1)[-1]
             source_ctx += "\n"
-            for i in range(col - 1):
+            for i in range(min(col - 1, len(err_line))):
                 if err_line[i] == "\t":
                     source_ctx += "\t"
                 else:

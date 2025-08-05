@@ -141,67 +141,77 @@ def list_() -> Iterator[LintCheck]:
         yield from checks
 
 
-def lint(code: CodeSummary, settings: Settings):
+def get_checkable_objects(
+    code: CodeSummary,
+    settings:Settings,
+) -> Iterator[tuple[CheckableObject, Context]]:
+    """Iterate through all checkable objects and yield the corresponding context"""
     ctx = Context(code=code, settings=settings)
+
+    for fb in code.function_blocks.values():
+        with ctx.function_block(fb):
+            yield fb, ctx
+
+            for decl in fb.declarations.values():
+                yield decl, ctx
+            if fb.implementation is not None:
+                for stat in get_statements(fb.implementation):
+                    yield stat, ctx
+                    for expr in get_expressions(stat):
+                        for subexpr in get_subexpressions(expr):
+                            yield subexpr, ctx
+
+            for method in fb.methods:
+                with ctx.method(method):
+                    yield method, ctx
+                    for decl in method.declarations.values():
+                        yield decl, ctx
+                    for stat in get_statements(method):
+                        yield stat, ctx
+                        for expr in get_expressions(stat):
+                            for subexpr in get_subexpressions(expr):
+                                yield subexpr, ctx
+
+            for prop in fb.properties:
+                yield prop, ctx
+                with ctx.method(prop.getter):
+                    for decl in prop.getter.declarations.values():
+                        yield decl, ctx
+                    for stat in get_statements(prop.getter):
+                        yield stat, ctx
+                        for expr in get_expressions(stat):
+                            for subexpr in get_subexpressions(expr):
+                                yield subexpr, ctx
+                with ctx.method(prop.setter):
+                    for decl in prop.setter.declarations.values():
+                        yield decl, ctx
+                    for stat in get_statements(prop.setter):
+                        yield stat, ctx
+                        for expr in get_expressions(stat):
+                            for subexpr in get_subexpressions(expr):
+                                yield subexpr, ctx
+
+
+def do_checks(obj: CheckableObject, **kwargs: Unpack[ExtraCheckParams]):
+    for typ, checks in __REGISTERED_CHECKS__.items():
+        if isinstance(obj, typ):
+            for check in checks:
+                yield from check(obj, **kwargs)
+
+
+def lint(code: CodeSummary, settings: Settings):
     errors = []
 
     # some objects may have already been checked, as they qualify both as an expression and
     # as a statement (like FunctionCallStatements)
     already_checked = set()
 
-    def _do_checks(obj: CheckableObject):
-        """Execute all checks registered for this object"""
+    for obj, ctx in get_checkable_objects(code, settings):
         if id(obj) in already_checked:
-            return
+            continue
 
-        for typ, checks in __REGISTERED_CHECKS__.items():
-            if isinstance(obj, typ):
-                for check in checks:
-                    errors.extend(check(obj, ctx=ctx, settings=settings))
+        errors.extend(do_checks(obj, ctx=ctx, settings=settings))
         already_checked.add(id(obj))
-
-    for fb in code.function_blocks.values():
-        with ctx.function_block(fb):
-            _do_checks(fb)
-
-            for decl in fb.declarations.values():
-                _do_checks(decl)
-            if fb.implementation is not None:
-                for stat in get_statements(fb.implementation):
-                    _do_checks(stat)
-                    for expr in get_expressions(stat):
-                        for subexpr in get_subexpressions(expr):
-                            _do_checks(subexpr)
-
-            for method in fb.methods:
-                with ctx.method(method):
-                    _do_checks(method)
-                    for decl in method.declarations.values():
-                        _do_checks(decl)
-                    for stat in get_statements(method):
-                        _do_checks(stat)
-                        for expr in get_expressions(stat):
-                            for subexpr in get_subexpressions(expr):
-                                _do_checks(subexpr)
-
-            for prop in fb.properties:
-                _do_checks(prop)
-                with ctx.method(prop.getter):
-                    for decl in prop.getter.declarations.values():
-                        _do_checks(decl)
-                    for stat in get_statements(prop.getter):
-                        _do_checks(stat)
-                        for expr in get_expressions(stat):
-                            for subexpr in get_subexpressions(expr):
-                                _do_checks(subexpr)
-                with ctx.method(prop.setter):
-                    for decl in prop.setter.declarations.values():
-                        _do_checks(decl)
-                    for stat in get_statements(prop.setter):
-                        _do_checks(stat)
-                        for expr in get_expressions(stat):
-                            for subexpr in get_subexpressions(expr):
-                                _do_checks(subexpr)
 
     if errors:
         logger.error(f"{len(errors)} errors found")
