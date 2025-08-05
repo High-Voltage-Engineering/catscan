@@ -6,7 +6,10 @@ from typing import Any
 from blark.summary import DeclarationSummary, Summary
 from blark.transform import Meta
 
+from catscan.utils import log
 from .context import Context
+
+logger = log.get_logger()
 
 
 @dataclass(kw_only=True)
@@ -31,6 +34,13 @@ class Location:
         elif self.source is not None and self.line is not None:
             # source and line are passed
             split_source = self.source.split("\n")
+            if self.line > len(split_source):
+                # line out of range
+                logger.warning(
+                    f"Source line {self.line} out of range for source "
+                    f"{self.source} (no. lines: {len(split_source)})"
+                )
+                return None
             return split_source[self.line - 1]
         elif self.file_line is not None:
             # cannot get context if no in-source line is passed, or if no source is passed

@@ -6,7 +6,7 @@ from catscan.lint.error import ErrorInfo
 from catscan.utils import tc3
 from catscan.utils.program import (
     all_subexpressions,
-    has_assignment,
+    has_assignment, get_statements, is_assignment_for,
 )
 
 
@@ -28,8 +28,9 @@ def prop_setter_reads_set_value(prop: PropertySummary):
 def prop_setter_value_not_written_to(prop: PropertySummary):
     """Check whether the property setter value is never written to."""
     if prop.setter.implementation:
-        if has_assignment(prop.setter, prop.name):
-            yield ErrorInfo(
-                message=f"Property setter variable '{prop.name}' is written to",
-                # todo: violating from code paths
-            )
+        for stat in get_statements(prop.setter):
+            if is_assignment_for(prop.name, stat, adr_is_assignment=False):
+                yield ErrorInfo(
+                    message=f"Property setter variable '{prop.name}' is written to",
+                    violating=stat,
+                )

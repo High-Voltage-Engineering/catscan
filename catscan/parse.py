@@ -151,28 +151,34 @@ def parse_all_source_items(
     files: Iterable[Path],
     cache_dir: Path | None = None,
     use_cache: bool = True,
+    parallel: bool = True,
     **kwargs,
 ) -> Iterator[ParseResult]:
     """Load and get all source items for this list of files, in parallel. kwargs are passed to
     the ProcessPoolExecutor, one may want to pass max_workers for example."""
-    futures: dict[fut.Future[list], Path] = {}
-    with fut.ProcessPoolExecutor(**kwargs) as pool:
-        logger.info("Submitting files for parsing...")
+    if parallel:
+        futures: dict[fut.Future[list], Path] = {}
+        with fut.ProcessPoolExecutor(**kwargs) as pool:
+            logger.info("Submitting files for parsing...")
+            for file in files:
+                futures[
+                    pool.submit(
+                        _parse_all_source_items_single,
+                        file,
+                        cache_dir=cache_dir,
+                        use_cache=use_cache,
+                    )
+                ] = file
+
+            logger.info(f"{len(futures)} files submitted for parsing")
+            for future in fut.as_completed(futures):
+                result = future.result()
+                logger.info(f"Parsed {futures[future].name}")
+                yield from result
+    else:
         for file in files:
             yield from _parse_all_source_items_single(
-                file, use_cache=False
+                file,
+                cache_dir=cache_dir,
+                use_cache=use_cache,
             )
-            # futures[
-            #     pool.submit(
-            #         _parse_all_source_items_single,
-            #         file,
-            #         cache_dir=cache_dir,
-            #         use_cache=use_cache,
-            #     )
-            # ] = file
-
-        logger.info(f"{len(futures)} files submitted for parsing")
-        for future in fut.as_completed(futures):
-            result = future.result()
-            logger.info(f"Parsed {futures[future].name}")
-            yield from result
