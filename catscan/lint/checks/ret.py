@@ -58,6 +58,7 @@ def property_has_return(prop: PropertySummary):
             )
             yield ErrorInfo(message=msg)
 
+
 # todo: this must check nested function calls...
 # @lint_check("RET202")
 # def function_block_returns_all_out_vars(fb: FunctionBlockSummary, ctx: Context):

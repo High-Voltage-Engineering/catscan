@@ -8,7 +8,7 @@ from blark.parse import summarize
 from catscan import lint
 from catscan.lint.base import do_checks, get_checkable_objects
 from catscan.parse import parse_all_source_items
-from catscan.settings import Settings, CheckSettings
+from catscan.settings import CheckSettings, Settings
 
 
 def make_settings(*, keep: Iterable[str] = ()) -> Settings:

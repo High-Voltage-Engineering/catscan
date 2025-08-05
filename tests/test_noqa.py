@@ -1,7 +1,7 @@
 import blark.transform as tf
+from support import function_block, get_errors, make_settings, method, tcpou
 
-from catscan.lint import lint_check, ErrorInfo
-from support import make_settings, tcpou, function_block, method, get_errors
+from catscan.lint import ErrorInfo, lint_check
 
 
 def test_no_noqa(tmp_path):
@@ -25,7 +25,7 @@ def test_no_noqa(tmp_path):
                 """,
                 implementation="""
                     s_nTest := s_nTest + 1;
-                """
+                """,
             )
         )
     )
@@ -57,7 +57,7 @@ def test_noqa(tmp_path):
                 """,
                 implementation="""
                     s_nTest := s_nTest + 1;  // noqa: TST001
-                """
+                """,
             )
         )
     )

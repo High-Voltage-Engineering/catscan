@@ -18,6 +18,7 @@ from catscan.utils.program import (
     get_statements,
     get_subexpressions,
 )
+
 from .context import Context
 from .error import Error, ErrorInfo
 
@@ -143,7 +144,7 @@ def list_() -> Iterator[LintCheck]:
 
 def get_checkable_objects(
     code: CodeSummary,
-    settings:Settings,
+    settings: Settings,
 ) -> Iterator[tuple[CheckableObject, Context]]:
     """Iterate through all checkable objects and yield the corresponding context"""
     ctx = Context(code=code, settings=settings)

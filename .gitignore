@@ -6,4 +6,4 @@ venvs/
 .catscan/
 
 # local clone of blark, which is useful for development
-blark/
+.blark/

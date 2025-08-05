@@ -275,17 +275,17 @@ class Context:
         elif isinstance(expr, tf.BinaryOperation):
             match str(expr.op):
                 case (
-                "OR"
-                | "XOR"
-                | "AND"
-                | "AND_THEN"
-                | "OR_ELSE"
-                | "="
-                | "<>"
-                | "<="
-                | ">="
-                | "<"
-                | ">"
+                    "OR"
+                    | "XOR"
+                    | "AND"
+                    | "AND_THEN"
+                    | "OR_ELSE"
+                    | "="
+                    | "<>"
+                    | "<="
+                    | ">="
+                    | "<"
+                    | ">"
                 ):
                     return "BOOLEAN"
                 case "MOD":

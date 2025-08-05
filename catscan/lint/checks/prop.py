@@ -6,7 +6,8 @@ from catscan.lint.error import ErrorInfo
 from catscan.utils import tc3
 from catscan.utils.program import (
     all_subexpressions,
-    has_assignment, get_statements, is_assignment_for,
+    get_statements,
+    is_assignment_for,
 )
 
 

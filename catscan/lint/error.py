@@ -7,6 +7,7 @@ from blark.summary import DeclarationSummary, Summary
 from blark.transform import Meta
 
 from catscan.utils import log
+
 from .context import Context
 
 logger = log.get_logger()
@@ -68,9 +69,9 @@ class Location:
             # source and line are passed
             split_source = self.source.split("\n")
             start_line = max(self.line - max_context_size, 0)
-            error_ctx_before = "\n".join(split_source[start_line: self.line])
+            error_ctx_before = "\n".join(split_source[start_line : self.line])
             end_line = min(self.line + max_context_size, len(split_source))
-            error_ctx_after = "\n".join(split_source[self.line: end_line])
+            error_ctx_after = "\n".join(split_source[self.line : end_line])
             col, end_col = self.col, self.end_col
 
             result += f" in line {self.line}:{col}"
