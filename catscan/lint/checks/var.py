@@ -58,6 +58,8 @@ def _is_camel_case(s: str) -> bool:
 
 def _get_type_prefix(typ: str, ctx: Context, settings: Settings) -> str | None:
     """Get type prefix for variable."""
+    # function blocks may be called (i.e. FB_ValueState(Input1 := ..., ...)
+    typ, *_ = typ.split("(", maxsplit=1)
     if is_array(typ):
         _, base_typ = get_array_dims_and_base_type(typ)
         base_prefix = _get_type_prefix(base_typ, ctx, settings)

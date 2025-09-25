@@ -4,6 +4,7 @@
 from .arg import *  # noqa: F403
 from .exp import *  # noqa: F403
 from .func import *  # noqa: F403
+from .meth import *  # noqa: F403
 from .prop import *  # noqa: F403
 from .ret import *  # noqa: F403
 from .stat import *  # noqa: F403

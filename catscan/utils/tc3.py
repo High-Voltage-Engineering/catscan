@@ -124,6 +124,17 @@ def is_super(var: str) -> bool:
     return streq(var, "SUPER") or streq(var, "SUPER^")
 
 
+def is_super_call(stat: tf.Statement, meth: str):
+    return (
+        isinstance(stat, tf.FunctionCall)
+        and isinstance(stat.name, tf.MultiElementVariable)
+        and is_super(stat.name.name.name)  # SUPER.<something>
+        and len(stat.name.elements) == 1
+        and isinstance(stat.name.elements[0], tf.FieldSelector)
+        and streq(stat.name.elements[0].field.name, meth)
+    )
+
+
 def is_abstract(obj: FunctionBlockSummary | MethodSummary) -> bool:
     return ((obj.item.access or 0) & tf.AccessSpecifier.abstract) != 0
 
