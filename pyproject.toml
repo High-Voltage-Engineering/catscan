@@ -1,13 +1,12 @@
 [project]
 name = "catscan"
 description = "Linter for TwinCAT"
-version = "0.0a1"
+version = "0.0.0"
 requires-python = ">=3.12"
 keywords = []
 authors = [
   { name = "Dennis Hilhorst", email = "dhilhorst@highvolteng.com" },
 ]
-
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
@@ -18,24 +17,25 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
   "License :: Other/Proprietary License"
 ]
-
 dependencies = [
   "click>=8.1",
   "lxml",
   "pydantic>=2.6,<=2.9.2",
   "ruamel.yaml>=0.18.6",
-  "blark @ git+https://github.com/High-Voltage-Engineering/blark.git"
+  "blark"
 ]
 
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+]
+
+[tool.uv.sources]
+blark = { git = "https://github.com/High-Voltage-Engineering/blark.git" }
+
 [build-system]
-requires = ["hatchling", "hatch-vcs"]
-build-backend = "hatchling.build"
-
-[tool.hatch.metadata]
-allow-direct-references = true
-
-[project.scripts]
-catscan = "catscan.__main__:main"
+requires = ["uv-build"]
+build-backend = "uv_build"
 
 [project.urls]
 Issues = "https://github.com/High-Voltage-Engineering/catscan/issues"
